@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 
+// Helpers:-
+
 const checkIfUserExist = async (user) => {
   try {
     const { userName, email, phoneNumber } = user;
@@ -83,6 +85,52 @@ const addUserToDB = async (user) => {
     return {};
   }
 };
+
+const addFollowerById = async (userId, followerId) => {
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      {
+        $addToSet: { followers: followerId },
+      },
+      { new: true },
+    );
+
+    return updatedUser.followers;
+  } catch (err) {
+    console.error('ADDING FOLLOWER:', err);
+    return null;
+  }
+};
+
+const removeFollowerById = async (userId, followerId) => {
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      {
+        $pull: { followers: followerId },
+      },
+      { new: true },
+    );
+
+    return updatedUser.followers;
+  } catch (err) {
+    console.error('REMOVING FOLLOWER:', err);
+    return null;
+  }
+};
+
+const getFollowersById = async (userId) => {
+  try {
+    const user = await User.findOne({ _id: userId });
+    return user.followers;
+  } catch (err) {
+    console.error('GETTING FOLLOWERS: ', err);
+    return null;
+  }
+};
+
+// Endpoints:-
 
 const userSignUp = async (req, res) => {
   const body = req?.body;
@@ -207,9 +255,75 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+const followUser = async (req, res) => {
+  try {
+    const { userId, followerId } = req.body;
+
+    const newFollowers = await addFollowerById(userId, followerId);
+
+    return res.status(200).json({
+      message: 'Follower added succesfully.',
+      followers: newFollowers,
+      followersCount: newFollowers.length,
+    });
+  } catch (err) {
+    console.log('FOLLWING USER: ', err);
+
+    return res.status(500).json({
+      message: 'Could not add follower.',
+      error: err,
+    });
+  }
+};
+
+const unfollowUser = async (req, res) => {
+  try {
+    const { userId, followerId } = req.body;
+
+    const newFollowers = await removeFollowerById(userId, followerId);
+
+    return res.status(200).json({
+      message: 'Follower removed succesfully.',
+      followers: newFollowers,
+      followersCount: newFollowers.length,
+    });
+  } catch (err) {
+    console.log('UNFOLLWING USER: ', err);
+
+    return res.status(500).json({
+      message: 'Could not remove follower.',
+      error: err,
+    });
+  }
+};
+
+const getFollowers = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const followers = await getFollowersById(userId);
+
+    return res.status(200).json({
+      message: 'Followers fetched succesfully.',
+      followers,
+      followersCount: followers.length,
+    });
+  } catch (err) {
+    console.log('FETCHING FOLLOWERS: ', err);
+
+    return res.status(500).json({
+      message: 'Could not fetch followers.',
+      error: err,
+    });
+  }
+};
+
 module.exports = {
   userSignUp,
   userLogin,
   getUser,
   getAllUsers,
+  followUser,
+  unfollowUser,
+  getFollowers,
 };

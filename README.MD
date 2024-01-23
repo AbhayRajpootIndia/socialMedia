@@ -51,7 +51,7 @@ To get started with this Social Media API project, follow these steps:
    MONGODB_PASSWORD=<mongodb_atlas_password>
    ```
 
-   Replace `<YOUR_SECRET>`, `<USERNAME>`, `<PASSWORD>`, `<mongodb_atlas_username>`, and `<mongodb_atlas_password>` with your actual values and MongoDB connection details.
+   Replace `<YOUR_SECRET>`, `<mongodb_atlas_username>`, and `<mongodb_atlas_password>` with your actual values and MongoDB connection details.
 
 4. **Start the Server:**
 

@@ -16,4 +16,8 @@ userRouter.get('/:id', userControllers.getUser);
 userRouter.post('/login', userControllers.userLogin);
 userRouter.post('/signup', userControllers.userSignUp);
 
+userRouter.get('/:id/followers', userControllers.getFollowers);
+userRouter.post('/follow', userControllers.followUser);
+userRouter.post('/unfollow', userControllers.unfollowUser);
+
 module.exports = userRouter;
